@@ -1,0 +1,3 @@
+tot 30,49
+fram ca 16
+bak ca 14

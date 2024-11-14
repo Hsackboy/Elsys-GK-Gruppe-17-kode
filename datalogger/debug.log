@@ -1,0 +1,7 @@
+[1031/134456.780:ERROR:registration_protocol_win.cc(108)] CreateFile: Systemet finner ikke angitt fil. (0x2)
+[1031/134502.293:ERROR:crashpad_client_win.cc(868)] not connected
+[1031/134502.446:ERROR:registration_protocol_win.cc(108)] CreateFile: Systemet finner ikke angitt fil. (0x2)
+[1031/134503.483:ERROR:crashpad_client_win.cc(868)] not connected
+[1031/134503.604:ERROR:registration_protocol_win.cc(108)] CreateFile: Systemet finner ikke angitt fil. (0x2)
+[1031/134504.386:ERROR:registration_protocol_win.cc(108)] CreateFile: Systemet finner ikke angitt fil. (0x2)
+[1031/134509.574:ERROR:registration_protocol_win.cc(108)] CreateFile: Systemet finner ikke angitt fil. (0x2)
