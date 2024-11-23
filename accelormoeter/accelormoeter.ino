@@ -1,24 +1,21 @@
+//denne koden bygger på et av eksemplene som ligger ved Adafruit_MPU6050.h som gir basiskoden for å lese av mpuen ved et viss tidsrom
 
-// Basic demo for accelerometer readings from Adafruit MPU6050
-
-// ESP32 Guide: https://RandomNerdTutorials.com/esp32-mpu-6050-accelerometer-gyroscope-arduino/
-// ESP8266 Guide: https://RandomNerdTutorials.com/esp8266-nodemcu-mpu-6050-accelerometer-gyroscope-arduino/
-// Arduino Guide: https://RandomNerdTutorials.com/arduino-mpu-6050-accelerometer-gyroscope/
-
-
-//esp 32 SCL -22 SDA -21
-
+//esp 32 SCL -22 SDA -21, vi glemte pinout ganske ofte
+//bibloteker
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
-#include <Wire.h>
 
+
+//kanppe pins
 const int BUTTON_PIN = 5;
 const int INTPin = 14;
 
+//Variabler for instillihgern
 int startTime = 0;
-int sampleTime = 100;
+int sampleTime = 20;
 int sampleCount = 0;
 
+//Calibrerings variabler
 float calibrateAksX = 0;
 float calibrateAksY = 0;
 float calibrateAksZ = 0;
@@ -26,6 +23,7 @@ float calibrateRotX = 0;
 float calibrateRotY = 0;
 float calibrateRotZ = 0;
 
+//definerer mpuen som mpu, er sikkert klasse eller objekt
 Adafruit_MPU6050 mpu;
 
 void setup(void) {
@@ -33,7 +31,8 @@ void setup(void) {
   while (!Serial)
     delay(10);  // will pause Zero, Leonardo, etc until serial console opens
 
-  Serial.println("Adafruit MPU6050 test!");
+
+  //oppsett janpper
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(INTPin, INPUT);
 
@@ -45,7 +44,8 @@ void setup(void) {
     }
   }
   Serial.println("MPU6050 Found!");
-
+  
+  //For foskjellige typer mpu, den finner ut av det selv
   mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
   Serial.print("Accelerometer range set to: ");
   switch (mpu.getAccelerometerRange()) {
@@ -109,9 +109,11 @@ void setup(void) {
   delay(100);
 }
 
-
+  //Funksjon som brukes til kaibrasjon
 float* calibrate(int sampels) {
-  Serial.println("Calibrating with: " + String(sampels) + "sampels");
+  //kode for å skille ut seriall data
+  Serial.println("Calibrating with: " + String(sampels) + "sampels");'
+  //variabler og instillinger(noen kunne kanskje vært i toppen av kdoen)
   const int sensorAmount = 6;
   const int sampleDelay = 500;
   static float calibrationNumbs[sensorAmount];
@@ -121,7 +123,7 @@ float* calibrate(int sampels) {
   float sumXRot = 0;
   float sumYRot = 0;
   float sumZRot = 0;
-  for (int i = 0; i < sampels; i++) {
+  for (int i = 0; i < sampels; i++) { //henter ut målinger
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
     sumXAks += a.acceleration.x;
@@ -134,6 +136,7 @@ float* calibrate(int sampels) {
     Serial.println(String(i + 1) + "/" + String(sampels));
     delay(sampleDelay);
   }
+  //regner ut feilen og justerer
   calibrationNumbs[0] = sumXAks / sampels;
   calibrationNumbs[1] = sumYAks / sampels;
   calibrationNumbs[2] = sumZAks / sampels;
@@ -146,7 +149,7 @@ float* calibrate(int sampels) {
 }
 
 void loop() {
-  int INTPinVal = digitalRead(INTPin);
+  int INTPinVal = digitalRead(INTPin); //leser pinen som bruker til si ifra når data er klar
 
   float xAks = 0;
   float yAks = 0;
@@ -156,10 +159,9 @@ void loop() {
   float zRot = 0;
 
   int calibrationButton = digitalRead(BUTTON_PIN);
-  // Serial.println(calibrationButton);
-  // Serial.println(INTPinVal);
+ 
 
-  if (calibrationButton == 0) {
+  if (calibrationButton == 0) { //kode for når aksmeter skal kalibreres
     float* calibrationVals = calibrate(10);
     calibrateAksX = calibrationVals[0];
     calibrateAksY = calibrationVals[1];
@@ -179,23 +181,14 @@ void loop() {
     Serial.println("------------------");
   }
 
-  startTime = millis();
+  startTime = millis();//brukes for tidssteg
   sampleCount = 0;
-  while ((millis()-startTime) < sampleTime) {
-    while (INTPinVal != 0) {
+  while ((millis()-startTime) < sampleTime) { //stopper kode når tid har gått
+    while (INTPinVal != 0) { //venter til aksmetere har data, skulle hatt en breakfunksjon slik at while funksjoen over kan gå ut
       INTPinVal = digitalRead(INTPin);
     }
 
-    // save the last state
-
-    // Serial.println(( millis()));
-    // Serial.println(( startTime));
-    // Serial.println(( millis()-startTime));
-    //   Serial.println(sampleCount);
-    //     Serial.println("-------------");
-
-
-      /* Get new sensor events with the readings */
+ //henter ut data fra aksmeteret og summerer de
       sensors_event_t a,
       g, temp;
     mpu.getEvent(&a, &g, &temp);
@@ -211,7 +204,7 @@ void loop() {
 
     sampleCount++;
   }
-
+//tar gjennomsnitt verdier
   xAks /=sampleCount;
   yAks /=sampleCount;
   zAks /=sampleCount;
@@ -222,26 +215,7 @@ void loop() {
 
 
 
-
-
-  // Serial.print("Acceleration X: ");
-  // Serial.print(xAks);
-  // Serial.print(", Y: ");
-  // Serial.print(yAks);
-  // Serial.print(", Z: ");
-  // Serial.print(zAks);
-  // Serial.println(" m/s^2");
-
-  // Serial.print("Rotation X: ");
-  // Serial.print(xRot);
-  // Serial.print(", Y: ");
-  // Serial.print(yRot);
-  // Serial.print(", Z: ");
-  // Serial.print(zRot);
-  // Serial.print(" rad/s");
-  // Serial.print(", sampels: ");
-  // Serial.print(sampleCount);
-  // Serial.println(" pr/måling");
+//kode for seriell data komunikasjon og analyse
   Serial.print(xAks);
   Serial.print(",");
   Serial.print(yAks);
@@ -258,11 +232,4 @@ void loop() {
   Serial.print(",");
   Serial.print((millis()-startTime));
   Serial.println("");
-
-  // Serial.print("Temperature: ");
-  // Serial.print(temp.temperature);
-  // Serial.println(" degC");
-
-  // Serial.println("");
-  // delay(100);
 }
