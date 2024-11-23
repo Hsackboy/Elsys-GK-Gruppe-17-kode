@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
+#Leser av daten vi hentet for akselerometeret og analyserer og plotter den
+
 xAks = []
 yAks = []
 zAks = []
@@ -37,6 +39,7 @@ with open("serial_log.txt", "r") as file:
 smoothAksX = []
 dtSmoot = []
 tSmoot = []
+#fjerner store variasjoner
 for i in range(0,len(xAks)-10,10):
     sumAksX = 0
     sumDt = 0
@@ -48,7 +51,7 @@ for i in range(0,len(xAks)-10,10):
     tSmoot.append(t[i])
     smoothAksX.append(sumAksX)    
 
-
+#integhrerer
 for i in range(len(tSmoot)-1):
     vy.append(vy[-1]+smoothAksX[i]*dtSmoot[i])
     sy.append(sy[-1]+vy[i]*dtSmoot[i])
@@ -60,7 +63,7 @@ t.pop(0)
 
 
 print(xAks)
-
+#plotter
 plt.title("t/sx")
 plt.plot(tSmoot,sy)
 plt.axhline(y=13,color = "r")
