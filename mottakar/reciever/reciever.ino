@@ -1,3 +1,6 @@
+// deler av denne koden er hentet fra siden lenket til under, den er modifisert for å ha rette pinouts til vår chip
+
+
 /*********
   Rui Santos
   Complete project details at https://RandomNerdTutorials.com/ttgo-lora32-sx1276-arduino-ide/
@@ -81,11 +84,13 @@ void setup() {
   LoRa.setPins(SS, RST);
   pinMode(DIO0, INPUT);  // Sett opp DIO0 som input hvis det er nødvendig
 
+  //loop for å vente til lora modulen starter og kobles til
   if (!LoRa.begin(BAND)) {
     Serial.println("Starting LoRa failed!");
     while (1)
       ;
   }
+  //Debug screen
   Serial.println("LoRa Initializing OK!");
   display.setCursor(0, 10);
   display.println("LoRa Initializing OK!");
@@ -99,13 +104,14 @@ void setup() {
 void loop() {
 
   //try to parse packet
-  int packetSize = LoRa.parsePacket();
-  if (packetSize) {
+  int packetSize = LoRa.parsePacket(); //mottar datapakke
+  if (packetSize) { //sjekker at den ikke er tom
     //received a packet
     Serial.print("Received packet ");
 
     //read packet
-    while (LoRa.available()) {
+    while (LoRa.available()) { 
+      //Litt rotete kode som henter ut dataen for de forksjellige inputsene. hver linje henter ut en spesoifik index
       LoRaData = LoRa.readString();
       int venstre = LoRaData.substring(0, 1).toInt();
       int opp = LoRaData.substring(1, 2).toInt();
@@ -113,6 +119,7 @@ void loop() {
       int ikkeVenstre = LoRaData.substring(3).toInt();
       Serial.print(LoRaData);
 
+      //Kontroll kode
       if (ikkeVenstre == 1) {
         display.print(LoRaData);
         sg90.write(180);
@@ -134,12 +141,14 @@ void loop() {
       }
       if (ned == 1) {
         digitalWrite(propPin, HIGH);
-        digitalWrite(magicPin, HIGH);
+        digitalWrite(magicPin, HIGH); //denne pinnen kom til bruk for en artig ekstra ting med fremvisningen av prosjektet, burde kanskej fjerne den
       } else {
 
       }
     }
 
+
+    //debugg kode for screen
     //print RSSI of packet
     int rssi = LoRa.packetRssi();
     Serial.print(" with RSSI ");
