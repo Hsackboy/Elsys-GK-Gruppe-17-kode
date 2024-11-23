@@ -1,3 +1,5 @@
+//Deler av denne koden er hentet fra lenken under men er modifisert siden koden ikke brukte samme chip og derfor hadde feil instillinger. 
+
 /*********
   Rui Santos
   Complete project details at https://RandomNerdTutorials.com/ttgo-lora32-sx1276-arduino-ide/
@@ -66,7 +68,7 @@ void setup() {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
   }
-  
+  //srkiver til display på senderen, ikke vikrig for funksjon bare fdor testing og sånt
   display.clearDisplay();
   display.setTextColor(WHITE);
   display.setTextSize(1);
@@ -82,11 +84,12 @@ void setup() {
   //LoRa.setPins(SS, RST, DIO0);
   LoRa.setPins(SS, RST);
   pinMode(DIO0, INPUT); // Sett opp DIO0 som input hvis det er nødvendig
-
+// Loop for å vente på at lora sytarter
   if (!LoRa.begin(BAND)) {
     Serial.println("Starting LoRa failed!");
     while (1);
   }
+  //test tekst 
   Serial.println("LoRa Initializing OK!");
   display.setCursor(0,10);
   display.print("LoRa Initializing OK!");
@@ -110,29 +113,8 @@ void loop() {
 
 
   //Send LoRa packet to receiver
-  LoRa.beginPacket();
-//  if (digitalRead(leftButton) == HIGH) {
-//     LoRa.print("Left");
-//     sg90.write(135);
-//     //
-//   }
-//   if (digitalRead(upButton) == HIGH) {
-//     LoRa.print("Up");
-//     sg90.write(90);
-//     //
-//   }
-//   if (digitalRead(downButton) == HIGH) {
-//     LoRa.print("Down");
-//     sg90.write(90);
-//     //
-//   }
-//   if (digitalRead(rightButton) == HIGH) {
-//     LoRa.print("Right");
-//     sg90.write(45);
-//     //
-//   }
-
-  
+  LoRa.beginPacket();//s7tart av datapakke
+  //Debugg screen
   display.clearDisplay();
   display.setCursor(0,0);
   display.println("LORA SENDER");
@@ -143,6 +125,8 @@ void loop() {
   display.setCursor(50,30);  
   display.print(count);
   display.setCursor(0,40);
+
+  // dataoppsett for sending av info, for hver knapp sendes det 1 eller 0 for på eller av
   if (digitalRead(leftButton) == HIGH) {
     LoRa.print("1");
   }
@@ -172,9 +156,9 @@ void loop() {
 
   }
   display.display();
-  LoRa.endPacket();
+  LoRa.endPacket();//sender datapakke
   count ++;
 
   
-  delay(300);
+  delay(300);//denne burde være dynamisk for å følge loven men det går fint siden det ikke er et 24t system
 }
