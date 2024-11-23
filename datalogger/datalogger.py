@@ -1,3 +1,7 @@
+#denne koden er bare for å gjøre det enkelt å hente data fra seriell, den er hentet fra:
+#https://makersportal.com/blog/2018/2/25/python-datalogger-reading-the-serial-output-from-arduino-to-analyze-data-using-pyserial
+
+
 import serial
 import time
 
